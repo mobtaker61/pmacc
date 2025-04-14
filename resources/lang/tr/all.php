@@ -2,6 +2,7 @@
 
 return [
     'app' => [
+        'dashboard' => 'Gösterge Paneli',
         'name' => 'Kasa Sistemi',
         'profile' => 'Profil',
         'settings' => 'Ayarlar',

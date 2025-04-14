@@ -40,7 +40,7 @@ class DashboardController extends Controller
                             ->sum('irr_amount');
         $activePartiesCount = Party::count();
 
-        $expensesByGroup = Expense::join('expense_groups', 'expenses.expense_group_id', '=', 'expense_groups.id')
+        $expensesByGroup = Expense::join('expense_groups', 'expenses.group_id', '=', 'expense_groups.id')
             ->where('expenses.date', '>=', Carbon::now()->subDays(30))
             ->select('expense_groups.name', DB::raw('SUM(expenses.irr_amount) as total'))
             ->groupBy('expense_groups.name')

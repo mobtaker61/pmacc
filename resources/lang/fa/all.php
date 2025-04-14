@@ -2,6 +2,7 @@
 
 return [
     'app' => [
+        'dashboard' => 'داشبورد',
         'name' => 'حسابدار تنخواه',
         'logout' => 'خروج',
         'profile' => 'پروفایل',
