@@ -6,26 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('petty_cash_box_id')->constrained()->onDelete('cascade');
-            $table->foreignId('expense_group_id')->constrained()->onDelete('cascade');
-            $table->foreignId('party_id')->nullable()->constrained()->onDelete('set null');
             $table->date('date');
-            $table->enum('type', ['income', 'expense']);
             $table->decimal('amount', 15, 2);
-            $table->string('currency');
+            $table->string('currency', 3)->default('IRR');
+            $table->decimal('rate', 15, 2)->default(1);
             $table->decimal('irr_amount', 15, 2);
-            $table->decimal('rate', 15, 2);
             $table->text('description')->nullable();
-            $table->string('receipt_image')->nullable();
+            $table->foreignId('group_id')->nullable()->constrained('expense_groups')->onDelete('set null');
+            $table->foreignId('party_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('petty_cash_box_id')->constrained()->onDelete('cascade');
+            $table->string('receipt_image', 191)->nullable();
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('expenses');
     }

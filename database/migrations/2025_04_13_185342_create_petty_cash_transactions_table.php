@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('petty_cash_box_id')->constrained()->onDelete('cascade');
             $table->date('transaction_date');
-            $table->string('type'); // income or expense
-            $table->string('payer_receiver');
-            $table->text('description')->nullable();
+            $table->enum('type', ['income', 'expense']);
+            $table->string('payer_receiver', 191);
             $table->decimal('amount', 15, 2);
-            $table->string('currency');
-            $table->decimal('irr_amount', 15, 2)->nullable();
-            $table->string('receipt_image')->nullable();
+            $table->string('currency', 3)->default('IRR');
+            $table->decimal('rate', 15, 2)->default(1);
+            $table->decimal('irr_amount', 15, 2);
+            $table->text('description')->nullable();
+            $table->string('receipt_image', 191)->nullable();
             $table->timestamps();
         });
     }
