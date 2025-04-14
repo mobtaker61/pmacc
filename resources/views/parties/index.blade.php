@@ -8,7 +8,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@lang('parties.parties')</h5>
                     <div>
-                        <a href="{{ route('party-groups.index') }}" class="btn btn-info me-2">
+                        <a href="{{ route('party_groups.index') }}" class="btn btn-info me-2">
                             <i class="fas fa-layer-group"></i> @lang('parties.groups')
                         </a>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPartyModal">

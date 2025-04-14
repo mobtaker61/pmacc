@@ -87,7 +87,7 @@
                 <h5 class="modal-title" id="createGroupModalLabel">@lang('parties.create_group')</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('party-groups.store') }}" method="POST">
+            <form action="{{ route('party_groups.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">

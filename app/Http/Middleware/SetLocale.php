@@ -20,22 +20,30 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        Log::debug('SetLocale middleware executing - Request Path: ' . $request->path());
-        
-        // Let LaravelLocalization handle the locale setting
-        // We only handle cookie persistence here
-        if ($request->hasCookie('locale')) {
-            $cookieLocale = $request->cookie('locale');
-            if (array_key_exists($cookieLocale, config('laravellocalization.supportedLocales', []))) {
-                Log::debug('Found valid locale in cookie: ' . $cookieLocale);
-                Session::put('locale', $cookieLocale);
-                Session::save();
-                Log::debug('Saved locale from cookie to session.');
-            }
+        // dd('SetLocale Middleware Reached. Session Locale: ' . Session::get('locale', 'Not Set')); // Remove dd()
+
+        $sessionLocale = Session::get('locale');
+        $defaultLocale = config('app.locale');
+        $supportedLocales = config('laravellocalization.supportedLocales', []);
+
+        $targetLocale = $defaultLocale; // Start with default
+
+        if ($sessionLocale && array_key_exists($sessionLocale, $supportedLocales)) {
+            $targetLocale = $sessionLocale;
+            Log::debug('Using locale from session: ' . $targetLocale);
+        } else {
+            Log::debug('No valid locale in session. Using default: ' . $targetLocale);
+            // Optionally ensure the default locale is stored in session if it wasn't there
+            // Session::put('locale', $targetLocale);
         }
-        
-        Log::debug('SetLocale finished. Locale in session (if set): ' . Session::get('locale'));
-        
+
+        // Set the application locale for the current request
+        App::setLocale($targetLocale);
+        Log::debug('Application locale set to: ' . App::getLocale());
+
+        // Optional: Set locale for URL generation if needed elsewhere, though we avoid it in URLs
+        // URL::defaults(['locale' => App::getLocale()]);
+
         return $next($request);
     }
 } 

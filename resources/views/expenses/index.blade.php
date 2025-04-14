@@ -15,7 +15,7 @@ use App\Helpers\DateHelper;
                             <span class="badge bg-info me-2">
                                 @lang('expenses.try_rate'): <span id="tryRate">1</span>
                             </span>
-                            <a href="{{ route('expense-groups.index') }}" class="btn btn-secondary btn-sm me-2">
+                            <a href="{{ route('expense_groups.index') }}" class="btn btn-secondary btn-sm me-2">
                                 <i class="fas fa-layer-group"></i> @lang('expenses.expense_groups')
                             </a>
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createExpenseModal">

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Config;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Illuminate\Support\Facades\Redirect;
 
 class LanguageController extends Controller
 {
@@ -17,31 +17,34 @@ class LanguageController extends Controller
         Log::info('Language switch requested from ' . App::getLocale() . ' to ' . $locale);
         
         // Check if the locale is valid
-        if (array_key_exists($locale, config('laravellocalization.supportedLocales'))) {
+        $supportedLocales = config('laravellocalization.supportedLocales', []);
+        if (array_key_exists($locale, $supportedLocales)) {
             // Save to session
             Session::put('locale', $locale);
-            Session::save();
+            Session::save(); // Ensure session is saved immediately
+            // Log the value immediately after putting it in session
+            Log::info('Locale put in session. Value now: ' . Session::get('locale')); 
             
-            // Create a cookie (will be sent with response)
-            Cookie::queue('locale', $locale, 60*24*30); // 30 days
+            // Temporarily disable cookie setting for testing
+            // Cookie::queue('locale', $locale, 60*24*30); 
             
             // Flash a success message
-            $languageName = config('laravellocalization.supportedLocales')[$locale]['name'];
+            $languageName = $supportedLocales[$locale]['name'];
             Session::flash('success', __('Language changed to :language', ['language' => $languageName]));
             
             Log::info('Language switch successful - Session locale: ' . Session::get('locale'));
             
             // For debugging details
             Log::debug('Session data dump: ' . json_encode(Session::all()));
-            Log::debug('Cookie data: ' . $locale);
+            // Log::debug('Cookie data: ' . $locale);
         } else {
             Log::warning('Invalid locale requested: ' . $locale);
             Session::flash('error', __('Invalid language selected'));
         }
 
-        // Use LaravelLocalization to get the localized URL
-        return redirect(LaravelLocalization::getLocalizedURL($locale, url()->previous()))
-            ->withCookie(cookie('locale', $locale, 60*24*30));
+        // Redirect back (without cookie in this test)
+        // return Redirect::back()->withCookie(cookie('locale', $locale, 60*24*30)); 
+        return Redirect::back();
     }
     
     public function test()

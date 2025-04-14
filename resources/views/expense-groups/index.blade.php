@@ -69,7 +69,7 @@
 <div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('expense-groups.store') }}" method="POST">
+            <form action="{{ route('expense_groups.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="createGroupModalLabel">@lang('expenses.create_group')</h5>
