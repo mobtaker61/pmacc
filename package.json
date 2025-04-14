@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "npx cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build"
+        "build": "npx cross-env NODE_OPTIONS=--max-old-space-size=1536 vite build"
     },
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
