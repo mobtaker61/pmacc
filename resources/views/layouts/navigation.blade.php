@@ -1,8 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
     <div class="container">
         <a href="{{ route('dashboard') }}" class="navbar-brand d-flex align-items-center">
-            <img src="{{ asset('images/PM-Proje-icon.png') }}" alt="{{ config('app.name') }}" width="40" height="40" class="d-inline-block align-text-top me-2">
-            <span class="fs-4">{{ config('app.name') }}</span>
+            <img src="{{ asset('images/PM-Proje-icon-w.png') }}" alt="{{ config('app.name') }}" width="40" height="40" class="d-inline-block align-text-top me-2">
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
