@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'actions' => 'Actions',
+    'cancel' => 'Cancel',
+    'save' => 'Save',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'create' => 'Create',
+    'update' => 'Update',
+    'back' => 'Back',
+    'next' => 'Next',
+    'previous' => 'Previous',
+    'search' => 'Search',
+    'filter' => 'Filter',
+    'clear' => 'Clear',
+    'loading' => 'Loading...',
+    'no_data' => 'No data found',
+    'are_you_sure' => 'Are you sure?',
+    'yes' => 'Yes',
+    'no' => 'No',
+    'success' => 'Success',
+    'error' => 'Error',
+    'warning' => 'Warning',
+    'info' => 'Info',
+]; 

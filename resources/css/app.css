@@ -1,0 +1,66 @@
+/* Custom styles */
+body {
+    font-family: 'Vazirmatn', sans-serif;
+}
+
+[dir="rtl"] {
+    font-family: 'Vazirmatn', 'IRANSans', sans-serif;
+}
+
+[dir="ltr"] {
+    font-family: 'Figtree', sans-serif;
+}
+
+/* Custom table styles */
+.table-responsive {
+    margin-bottom: 1rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Custom form styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.custom-file-label::after {
+    content: "انتخاب فایل";
+}
+
+/* Custom button styles */
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Custom card styles */
+.card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Custom badge styles */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 600;
+}
+
+/* Custom switch styles */
+.custom-switch {
+    padding-left: 2.25rem;
+}
+
+/* Custom file input styles */
+.custom-file-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+} 

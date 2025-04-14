@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'actions' => 'İşlemler',
+    'cancel' => 'İptal',
+    'save' => 'Kaydet',
+    'edit' => 'Düzenle',
+    'delete' => 'Sil',
+    'create' => 'Oluştur',
+    'update' => 'Güncelle',
+    'back' => 'Geri',
+    'next' => 'Sonraki',
+    'previous' => 'Önceki',
+    'search' => 'Ara',
+    'filter' => 'Filtrele',
+    'clear' => 'Temizle',
+    'loading' => 'Yükleniyor...',
+    'no_data' => 'Veri bulunamadı',
+    'are_you_sure' => 'Emin misiniz?',
+    'yes' => 'Evet',
+    'no' => 'Hayır',
+    'success' => 'Başarılı',
+    'error' => 'Hata',
+    'warning' => 'Uyarı',
+    'info' => 'Bilgi',
+]; 
