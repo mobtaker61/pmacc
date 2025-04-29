@@ -9,6 +9,8 @@ return [
         'error_occurred_saving' => 'خطایی در هنگام ذخیره رخ داد.',
         'file_upload_error' => 'خطا در بارگذاری فایل.',
         'date' => 'Tarih',
+        'view_all' => 'Tümünü Gör',
+        'current_balance' => 'Mevcut Bakiye',
     ],
     'app' => [
         'dashboard' => 'Gösterge Paneli',

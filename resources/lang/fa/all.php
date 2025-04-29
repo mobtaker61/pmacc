@@ -9,6 +9,8 @@ return [
         'error_occurred_saving' => 'خطایی در هنگام ذخیره رخ داد.',
         'file_upload_error' => 'خطا در بارگذاری فایل.',
         'date' => 'تاریخ',
+        'view_all' => 'نمایش همه',
+        'current_balance' => 'موجودی فعلی',
     ],
     'app' => [
         'dashboard' => 'داشبورد',

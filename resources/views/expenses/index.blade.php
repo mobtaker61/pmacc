@@ -261,8 +261,8 @@ use App\Helpers\DateHelper;
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('common.cancel')</button>
-                    <button type="submit" class="btn btn-primary" id="createExpenseSubmitBtn">@lang('common.save')</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('all.common.cancel')</button>
+                    <button type="submit" class="btn btn-primary" id="createExpenseSubmitBtn">@lang('all.common.save')</button>
                 </div>
             </form>
         </div>
@@ -351,8 +351,8 @@ use App\Helpers\DateHelper;
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('general.cancel')</button>
-                    <button type="submit" class="btn btn-primary">@lang('general.save')</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('all.common.cancel')</button>
+                    <button type="submit" class="btn btn-primary">@lang('all.common.save')</button>
                 </div>
             </form>
         </div>
@@ -431,8 +431,8 @@ use App\Helpers\DateHelper;
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancelPartyBtn" data-bs-dismiss="modal">@lang('common.cancel')</button>
-                    <button type="submit" class="btn btn-primary" id="savePartyBtn">@lang('common.save')</button>
+                    <button type="button" class="btn btn-secondary" id="cancelPartyBtn" data-bs-dismiss="modal">@lang('all.common.cancel')</button>
+                    <button type="submit" class="btn btn-primary" id="savePartyBtn">@lang('all.common.save')</button>
                 </div>
             </form>
         </div>
@@ -697,7 +697,7 @@ use App\Helpers\DateHelper;
                     .finally(() => {
                         // Reset button state
                         savePartyBtn.disabled = false;
-                        savePartyBtn.innerHTML = '@lang("common.save")';
+                        savePartyBtn.innerHTML = '@lang("all.common.save")';
                     });
             });
         }
@@ -713,7 +713,7 @@ use App\Helpers\DateHelper;
 
                 // Show loading state on button
                 createExpenseSubmitBtn.disabled = true;
-                createExpenseSubmitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> @lang('common.saving')...`;
+                createExpenseSubmitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> @lang('all.common.saving')...`;
 
                 // Clear previous errors
                 createExpenseErrorsList.innerHTML = '';
@@ -778,7 +778,7 @@ use App\Helpers\DateHelper;
                     .finally(() => {
                         // Reset button state
                         createExpenseSubmitBtn.disabled = false;
-                        createExpenseSubmitBtn.innerHTML = `@lang('common.save')`;
+                        createExpenseSubmitBtn.innerHTML = `@lang('all.common.save')`;
                     });
             });
         }
@@ -801,7 +801,7 @@ use App\Helpers\DateHelper;
                     const submitBtn = form.querySelector('button[type="submit"]');
                     submitBtn.disabled = true;
                     const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ذخیره...`;
+                    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> @lang('all.common.saving')...`;
 
                     const formData = new FormData(form);
                     fetch(form.action, {

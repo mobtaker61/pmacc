@@ -80,9 +80,9 @@
                                     <tr>
                                         <th>@lang('all.petty_cash.boxes.name')</th>
                                         <th>@lang('all.petty_cash.boxes.currency')</th>
-                                        <th>@lang('all.petty_cash.boxes.current_balance_irr')</th>
+                                        <th>@lang('all.common.current_balance')</th>
                                         {{-- Optional: Add balance in original currency --}}
-                                        {{-- <th>@lang('all.petty_cash.boxes.current_balance')</th> --}}
+                                        {{-- <th>@lang('all.common.current_balance')</th> --}}
                                         <th>@lang('all.app.actions')</th>
                                     </tr>
                                 </thead>
@@ -157,7 +157,7 @@
                         </table>
                     </div>
                     <div class="mt-3">
-                        <a href="{{ route('parties.index') }}" class="btn btn-outline-primary btn-sm">@lang('parties.view_all')</a>
+                        <a href="{{ route('parties.index') }}" class="btn btn-outline-primary btn-sm">@lang('all.common.view_all')</a>
                     </div>
                 </div>
             </div>
