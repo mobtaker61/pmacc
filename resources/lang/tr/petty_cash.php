@@ -17,6 +17,7 @@ return [
 
     'transactions' => [
         'title' => 'Kasa Hareketleri',
+        'petty_cash_box' => 'Kasa'
         // ... other transaction keys (translate these too if needed)
     ],
 

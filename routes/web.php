@@ -37,55 +37,79 @@ Route::redirect('/', '/dashboard');
 //     return view('welcome');
 // });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::group(
+    [
+        'prefix' => LaravelLocalization::setLocale(),
+        'middleware' => [
+            \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
+            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class
+        ]
+    ],
+    function () {
 
-Route::post('language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->middleware(['auth', 'verified'])
+            ->name('dashboard');
 
-// Test route for session locale
-Route::get('/test-session-locale', function () {
-    Log::info('Accessing /test-session-locale route.');
-    return response()->json([
-        'session_locale_on_request' => Session::get('locale', 'NOT SET in session'),
-        'app_locale_on_request' => App::getLocale(),
-    ]);
-})->middleware('web');
+        Route::post('language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 
-// Routes that need authentication
-Route::middleware('auth')->group(function () {
-    // Profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        // Test route for session locale
+        Route::get('/test-session-locale', function () {
+            return [
+                'session_locale' => session('locale'),
+                'app_locale' => app()->getLocale(),
+            ];
+        })->middleware('web');
 
-    // Resource routes
-    Route::resource('petty_cash_boxes', PettyCashBoxController::class);
-    Route::resource('petty_cash_transactions', PettyCashTransactionController::class);
-    Route::resource('expense_groups', ExpenseGroupController::class);
-    Route::resource('expenses', ExpenseController::class);
-    Route::resource('party_groups', PartyGroupController::class);
-    Route::resource('parties', PartyController::class);
-    Route::resource('settings', SettingsController::class);
+        // نمایش همه تراکنش‌های تنخواه
+        Route::get('/petty-cash/transactions', [PettyCashTransactionController::class, 'allTransactions'])->name('petty-cash.transactions.all');
 
-    // Settings routes
-    Route::resource('settings', SettingController::class)->only(['index', 'edit', 'update']);
-    Route::get('/settings/try-rate', [SettingsController::class, 'getTryRate'])->name('settings.try-rate');
+        // نمایش تراکنش‌های یک صندوق خاص
+        Route::get('/petty-cash/boxes/{box}/transactions', [PettyCashTransactionController::class, 'index'])->name('petty-cash.transactions.index');
 
-    // Petty Cash routes
-    Route::prefix('petty-cash')->name('petty-cash.')->group(function () {
-        // Boxes routes
-        Route::get('boxes', [PettyCashBoxController::class, 'index'])->name('boxes.index');
-        Route::get('boxes/create', [PettyCashBoxController::class, 'create'])->name('boxes.create');
-        Route::post('boxes', [PettyCashBoxController::class, 'store'])->name('boxes.store');
-        Route::get('boxes/{box}/edit', [PettyCashBoxController::class, 'edit'])->name('boxes.edit');
-        Route::put('boxes/{box}', [PettyCashBoxController::class, 'update'])->name('boxes.update');
+        // Routes that need authentication
+        Route::middleware('auth')->group(function () {
+            // Profile routes
+            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+            Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        // Transactions routes
-        Route::get('transactions', [PettyCashTransactionController::class, 'index'])->name('transactions.index');
-        Route::get('transactions/create', [PettyCashTransactionController::class, 'create'])->name('transactions.create');
-        Route::post('transactions', [PettyCashTransactionController::class, 'store'])->name('transactions.store');
-    });
-});
+            // Resource routes
+            Route::resource('petty_cash_boxes', PettyCashBoxController::class);
+            Route::resource('petty_cash_transactions', PettyCashTransactionController::class);
+            Route::resource('expense_groups', ExpenseGroupController::class);
+            Route::resource('expenses', ExpenseController::class);
+            Route::resource('party_groups', PartyGroupController::class);
+            Route::resource('parties', PartyController::class);
+            //Route::resource('settings', SettingsController::class);
 
-require __DIR__.'/auth.php';
+            // Settings routes
+            Route::resource('settings', SettingController::class)->only(['index', 'edit', 'update']);
+            Route::get('/settings/try-rate', [SettingsController::class, 'getTryRate'])->name('settings.try-rate');
+
+            // Petty Cash routes
+            Route::prefix('petty-cash')->name('petty-cash.')->group(function () {
+                // Boxes routes
+                Route::get('boxes', [PettyCashBoxController::class, 'index'])->name('boxes.index');
+                Route::get('boxes/create', [PettyCashBoxController::class, 'create'])->name('boxes.create');
+                Route::post('boxes', [PettyCashBoxController::class, 'store'])->name('boxes.store');
+                Route::get('boxes/{box}/edit', [PettyCashBoxController::class, 'edit'])->name('boxes.edit');
+                Route::put('boxes/{box}', [PettyCashBoxController::class, 'update'])->name('boxes.update');
+
+                // Transactions CRUD (بدون all و بدون index با پارامتر box)
+                Route::get('transactions/create', [PettyCashTransactionController::class, 'create'])->name('transactions.create');
+                Route::post('transactions', [PettyCashTransactionController::class, 'store'])->name('transactions.store');
+            });
+        });
+
+        Route::get('/test-locale', function () {
+            return [
+                'session_locale' => session('locale'),
+                'app_locale' => app()->getLocale(),
+            ];
+        });
+
+        require __DIR__ . '/auth.php';
+    }
+);

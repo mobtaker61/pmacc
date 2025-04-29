@@ -10,12 +10,12 @@ class PartyGroupController extends Controller
     public function index()
     {
         $partyGroups = PartyGroup::paginate(10);
-        return view('party-groups.index', compact('partyGroups'));
+        return view('party_groups.index', compact('partyGroups'));
     }
 
     public function create()
     {
-        return view('party-groups.create');
+        return view('party_groups.create');
     }
 
     public function store(Request $request)
@@ -27,13 +27,13 @@ class PartyGroupController extends Controller
 
         PartyGroup::create($request->all());
 
-        return redirect()->route('party-groups.index')
+        return redirect()->route('party_groups.index')
             ->with('success', __('parties.group_created'));
     }
 
     public function edit(PartyGroup $partyGroup)
     {
-        return view('party-groups.edit', compact('partyGroup'));
+        return view('party_groups.edit', compact('partyGroup'));
     }
 
     public function update(Request $request, PartyGroup $partyGroup)
@@ -45,7 +45,7 @@ class PartyGroupController extends Controller
 
         $partyGroup->update($request->all());
 
-        return redirect()->route('party-groups.index')
+        return redirect()->route('party_groups.index')
             ->with('success', __('parties.group_updated'));
     }
 
@@ -53,7 +53,7 @@ class PartyGroupController extends Controller
     {
         $partyGroup->delete();
 
-        return redirect()->route('party-groups.index')
+        return redirect()->route('party_groups.index')
             ->with('success', __('parties.group_deleted'));
     }
 } 

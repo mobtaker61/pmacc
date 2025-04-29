@@ -16,41 +16,25 @@ class DashboardController extends Controller
     public function index(): View
     {
         $boxes = PettyCashBox::all();
-        
-        $parties = Party::withSum(['transactions as total_payments' => function ($query) {
-            $query->where('type', 'payment');
-        }], 'irr_amount')
-        ->withSum(['transactions as total_receipts' => function ($query) {
-            $query->where('type', 'receipt');
-        }], 'irr_amount')
-        ->latest()
-        ->take(5)
-        ->get()
-        ->map(function ($party) {
-            $party->total_payments = $party->total_payments ?? 0;
-            $party->total_receipts = $party->total_receipts ?? 0;
-            $party->balance = $party->total_receipts - $party->total_payments;
-            return $party;
-        });
 
-        $totalBalanceIRR = $boxes->sum('current_balance');
-        $expensesLast30Days = Expense::where('date', '>=', Carbon::now()->subDays(30))->sum('irr_amount');
-        $incomeLast30Days = PettyCashTransaction::where('type', 'income')
-                            ->where('transaction_date', '>=', Carbon::now()->subDays(30))
-                            ->sum('irr_amount');
-        $activePartiesCount = Party::count();
+        // مجموع واریزی به صندوق (تنخواه)
+        $totalIncomeToBox = PettyCashTransaction::where('type', 'income')->sum('irr_amount');
+        // مجموع هزینه ها
+        $totalExpenses = Expense::sum('irr_amount');
+        // مانده صندوق = واریزی به صندوق - مجموع هزینه ها
+        $pettyCashBalance = $totalIncomeToBox - $totalExpenses;
 
-        $expensesByGroup = Expense::join('expense_groups', 'expenses.group_id', '=', 'expense_groups.id')
-            ->where('expenses.date', '>=', Carbon::now()->subDays(30))
-            ->select('expense_groups.name', DB::raw('SUM(expenses.irr_amount) as total'))
-            ->groupBy('expense_groups.name')
-            ->orderBy('total', 'desc')
-            ->pluck('total', 'name')
-            ->all();
+        // KPI data
+        $kpiData = [
+            'pettyCashBalance' => $pettyCashBalance,
+            'expensesLast30Days' => Expense::where('date', '>=', Carbon::now()->subDays(30))->sum('irr_amount'),
+            'totalIncomeToBox' => $totalIncomeToBox,
+            'activePartiesCount' => Party::count(),
+        ];
 
+        // چارت روند هزینه ها (۳۰ روز اخیر)
         $startDate = Carbon::now()->subDays(29)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
-        
         $dailyExpenses = Expense::select(
                 DB::raw('DATE(date) as day'),
                 DB::raw('SUM(irr_amount) as total')
@@ -60,35 +44,49 @@ class DashboardController extends Controller
             ->orderBy('day')
             ->pluck('total', 'day')
             ->all();
-
-        $dailyIncome = PettyCashTransaction::where('type', 'income')->select(
-                DB::raw('DATE(transaction_date) as day'),
-                DB::raw('SUM(irr_amount) as total')
-            )
-            ->whereBetween('transaction_date', [$startDate, $endDate])
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('total', 'day')
-            ->all();
-            
         $trendLabels = [];
-        $trendIncomeData = [];
         $trendExpenseData = [];
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dayStr = $date->toDateString();
             $trendLabels[] = $date->format('M d');
-            $trendIncomeData[] = $dailyIncome[$dayStr] ?? 0;
             $trendExpenseData[] = $dailyExpenses[$dayStr] ?? 0;
         }
-        
-        $incomeExpenseTrendData = [
+        $expenseTrendData = [
             'labels' => $trendLabels,
-            'income' => $trendIncomeData,
             'expense' => $trendExpenseData,
         ];
 
-        $kpiData = compact('totalBalanceIRR', 'expensesLast30Days', 'incomeLast30Days', 'activePartiesCount');
-        $chartData = compact('expensesByGroup', 'incomeExpenseTrendData');
+        // چارت هزینه ها براساس گروه
+        $expensesByGroup = ExpenseGroup::with('expenses')
+            ->get()
+            ->mapWithKeys(function ($group) {
+                return [$group->name => $group->expenses->sum('irr_amount')];
+            })
+            ->toArray();
+        $chartData = [
+            'expensesByGroup' => $expensesByGroup,
+            'expenseTrendData' => $expenseTrendData,
+        ];
+
+        // Parties logic unchanged
+        $parties = Party::withSum(['expenses as expense_payments'], 'irr_amount')
+            ->withSum(['transactions as transaction_payments' => function ($query) {
+                $query->where('type', 'payment');
+            }], 'irr_amount')
+            ->withSum(['transactions as total_receipts' => function ($query) {
+                $query->where('type', 'receipt');
+            }], 'irr_amount')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($party) {
+                $party->expense_payments = $party->expense_payments ?? 0;
+                $party->transaction_payments = $party->transaction_payments ?? 0;
+                $party->total_payments = $party->expense_payments + $party->transaction_payments;
+                $party->total_receipts = $party->total_receipts ?? 0;
+                $party->balance = $party->total_receipts - $party->total_payments;
+                return $party;
+            });
 
         return view('dashboard', compact('boxes', 'parties', 'kpiData', 'chartData'));
     }

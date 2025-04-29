@@ -1,6 +1,15 @@
 <?php
 
 return [
+    'common' => [
+        'save' => 'Kayit',
+        'cancel' => 'Iptal',
+        'add_new' => 'Yeni',
+        'error_occurred' => 'خطایی رخ داد. لطفا دوباره تلاش کنید.',
+        'error_occurred_saving' => 'خطایی در هنگام ذخیره رخ داد.',
+        'file_upload_error' => 'خطا در بارگذاری فایل.',
+        'date' => 'Tarih',
+    ],
     'app' => [
         'dashboard' => 'Gösterge Paneli',
         'name' => 'Kasa Sistemi',
@@ -37,6 +46,8 @@ return [
             'is_active' => 'Aktif',
             'description' => 'Açıklama',
             'actions' => 'İşlemler',
+            'all_boxes' => 'همه صندوقها',
+
         ],
         'transactions' => [
             'title' => 'Küçük Kasa İşlemleri',
@@ -72,4 +83,4 @@ return [
         'general_settings' => 'Genel Ayarlar',
         'try_to_irr_rate' => 'Türk Lirası - İran Riyali Döviz Kuru',
     ],
-]; 
+];

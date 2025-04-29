@@ -17,7 +17,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('petty-cash.transactions.index') }}" class="nav-link {{ request()->routeIs('petty-cash.transactions.*') ? 'active' : '' }}">
+                    <a href="{{ route('petty-cash.transactions.all') }}" class="nav-link {{ request()->routeIs('petty-cash.transactions.*') ? 'active' : '' }}">
                         <i class="fas fa-exchange-alt me-1"></i>
                         {{ __('all.petty_cash.navigation.petty_cash_transactions') }}
                     </a>
@@ -43,29 +43,16 @@
             </ul>
 
             <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-globe me-1"></i>
-                        {{ strtoupper(isset($app_locale) ? $app_locale : app()->getLocale()) }}
+                <li class="nav-item">
+                    @if(app()->getLocale() == 'fa')
+                    <a href="{{ LaravelLocalization::getLocalizedURL('tr', null, [], true) }}" class="dropdown-item">
+                        <span class="flag-icon">🇹🇷</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('switch-to-fa').submit();">
-                                <span class="flag-icon">🇮🇷</span> فارسی
-                            </a>
-                            <form action="{{ route('language.switch', 'fa') }}" method="POST" id="switch-to-fa" style="display: none;">
-                                @csrf
-                            </form>
-                        </li>
-                        <li>
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('switch-to-tr').submit();">
-                                <span class="flag-icon">🇹🇷</span> Türkçe
-                            </a>
-                            <form action="{{ route('language.switch', 'tr') }}" method="POST" id="switch-to-tr" style="display: none;">
-                                @csrf
-                            </form>
-                        </li>
-                    </ul>
+                    @else
+                    <a href="{{ LaravelLocalization::getLocalizedURL('fa', null, [], true) }}" class="dropdown-item">
+                        <span class="flag-icon">🇮🇷</span>
+                    </a>
+                    @endif
                 </li>
 
                 <li class="nav-item dropdown">
@@ -79,7 +66,9 @@
                                 <i class="fas fa-user me-2"></i> {{ __('all.app.profile') }}
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

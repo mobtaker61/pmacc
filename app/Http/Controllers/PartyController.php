@@ -45,7 +45,15 @@ class PartyController extends Controller
             'party_group_id' => 'nullable|exists:party_groups,id',
         ]);
 
-        Party::create($validated);
+        $party = Party::create($validated);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('parties.party_created'),
+                'party' => $party
+            ]);
+        }
 
         return redirect()->route('parties.index')
             ->with('success', __('parties.party_created'));

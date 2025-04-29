@@ -16,7 +16,6 @@ class PettyCashTransaction extends Model
         'amount',
         'description',
         'transaction_date',
-        'payer_receiver',
         'currency',
         'rate',
         'irr_amount',
@@ -27,7 +26,7 @@ class PettyCashTransaction extends Model
         'transaction_date' => 'date',
         'amount' => 'decimal:2',
         'rate' => 'decimal:2',
-        'irr_amount' => 'decimal:2'
+        'irr_amount' => 'decimal:0'
     ];
 
     public function pettyCashBox()

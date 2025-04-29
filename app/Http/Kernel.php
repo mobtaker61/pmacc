@@ -30,7 +30,11 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\SetLocale::class,
+           // \App\Http\Middleware\SetLocale::class,
+            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
+            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+            \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
+            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
         ],
 
         'api' => [

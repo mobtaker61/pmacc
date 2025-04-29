@@ -13,7 +13,6 @@ class Expense extends Model
     protected $fillable = [
         'petty_cash_box_id',
         'expense_group_id',
-        'group_id',
         'party_id',
         'date',
         'type',
@@ -39,7 +38,7 @@ class Expense extends Model
 
     public function expenseGroup(): BelongsTo
     {
-        return $this->belongsTo(ExpenseGroup::class);
+        return $this->belongsTo(ExpenseGroup::class, 'expense_group_id');
     }
 
     public function party(): BelongsTo

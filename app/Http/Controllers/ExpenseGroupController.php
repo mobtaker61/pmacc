@@ -22,7 +22,7 @@ class ExpenseGroupController extends Controller
 
         ExpenseGroup::create($request->all());
 
-        return redirect()->route('expense-groups.index')
+        return redirect()->route('expense_groups.index')
             ->with('success', __('expenses.group_created'));
     }
 
@@ -35,7 +35,7 @@ class ExpenseGroupController extends Controller
 
         $expenseGroup->update($request->all());
 
-        return redirect()->route('expense-groups.index')
+        return redirect()->route('expense_groups.index')
             ->with('success', __('expenses.group_updated'));
     }
 
@@ -43,7 +43,7 @@ class ExpenseGroupController extends Controller
     {
         $expenseGroup->delete();
 
-        return redirect()->route('expense-groups.index')
+        return redirect()->route('expense_groups.index')
             ->with('success', __('expenses.group_deleted'));
     }
 } 

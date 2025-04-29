@@ -20,20 +20,22 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        // dd('SetLocale Middleware Reached. Session Locale: ' . Session::get('locale', 'Not Set')); // Remove dd()
+        //dd('SetLocale middleware executed', Session::get('locale'), App::getLocale());
+
+        Log::debug('Session locale: ' . json_encode(Session::all()));
 
         $sessionLocale = Session::get('locale');
+        $cookieLocale = $request->cookie('locale');
         $defaultLocale = config('app.locale');
-        $supportedLocales = config('laravellocalization.supportedLocales', []);
+        $supportedLocales = ['fa' => 'fa', 'tr' => 'tr'];
 
-        $targetLocale = $defaultLocale; // Start with default
+        $targetLocale = in_array($sessionLocale, ['fa', 'tr']) ? $sessionLocale : (in_array($cookieLocale, ['fa', 'tr']) ? $cookieLocale : $defaultLocale);
 
-        if ($sessionLocale && array_key_exists($sessionLocale, $supportedLocales)) {
+        if ($sessionLocale === 'fa' || $sessionLocale === 'tr') {
             $targetLocale = $sessionLocale;
             Log::debug('Using locale from session: ' . $targetLocale);
         } else {
             Log::debug('No valid locale in session. Using default: ' . $targetLocale);
-            // Optionally ensure the default locale is stored in session if it wasn't there
             // Session::put('locale', $targetLocale);
         }
 
@@ -41,9 +43,16 @@ class SetLocale
         App::setLocale($targetLocale);
         Log::debug('Application locale set to: ' . App::getLocale());
 
+        // برای تست
+        Log::info('SetLocale middleware', [
+            'session_locale' => $sessionLocale,
+            'target_locale' => $targetLocale,
+            'app_locale' => App::getLocale(),
+        ]);
+
         // Optional: Set locale for URL generation if needed elsewhere, though we avoid it in URLs
         // URL::defaults(['locale' => App::getLocale()]);
-
+        
         return $next($request);
     }
 } 

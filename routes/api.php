@@ -24,5 +24,4 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::middleware('auth:sanctum')->get('/settings/try-rate', [SettingsController::class, 'getTryRate']);
 }); 

@@ -51,10 +51,6 @@ class ExpenseController extends Controller
         $rawDateInput = $request->input('date');
         $latinDateInput = $this->convertNumbersToLatin($rawDateInput);
 
-        // Log the raw and converted date input for debugging
-        Log::info('Raw date input:', ['date' => $rawDateInput]);
-        Log::info('Latin date input:', ['date' => $latinDateInput]);
-
         // Merge the *converted* date back into the request for validation
         $request->merge(['date' => $latinDateInput]);
 
@@ -93,43 +89,43 @@ class ExpenseController extends Controller
         if (app()->getLocale() === 'fa') {
             if (!empty($validated['date'])) {
                 $originalDate = $validated['date']; // This is now Latin numeral date
-                 try {
+                try {
                     // Try parsing with Carbon first (should work now)
                     $carbonDate = \Carbon\Carbon::parse(str_replace('/', '-', $validated['date']));
                     $validated['date'] = Jalalian::fromCarbon($carbonDate)->format('Y-m-d');
                     Log::info('Date conversion successful (Carbon):', ['original' => $originalDate, 'converted' => $validated['date']]);
-                 } catch (\Exception $e) {
-                     Log::warning('Date conversion failed (Carbon), trying Jalalian::fromFormat:', ['original' => $originalDate, 'error' => $e->getMessage()]);
+                } catch (\Exception $e) {
+                    Log::warning('Date conversion failed (Carbon), trying Jalalian::fromFormat:', ['original' => $originalDate, 'error' => $e->getMessage()]);
                     // Fallback to Jalalian::fromFormat (should also work now)
                     try {
-                         $carbonDate = Jalalian::fromFormat('Y/m/d', $originalDate)->toCarbon();
-                         $validated['date'] = $carbonDate->format('Y-m-d');
-                         Log::info('Date conversion successful (Jalalian::fromFormat):', ['original' => $originalDate, 'converted' => $validated['date']]);
+                        $carbonDate = Jalalian::fromFormat('Y/m/d', $originalDate)->toCarbon();
+                        $validated['date'] = $carbonDate->format('Y-m-d');
+                        Log::info('Date conversion successful (Jalalian::fromFormat):', ['original' => $originalDate, 'converted' => $validated['date']]);
                     } catch (\Exception $e2) {
-                         Log::error('Date conversion failed (Both methods):', ['original' => $originalDate, 'error' => $e2->getMessage()]);
+                        Log::error('Date conversion failed (Both methods):', ['original' => $originalDate, 'error' => $e2->getMessage()]);
                         // If both fail, return a specific validation error for the date field
                         return response()->json(['errors' => ['date' => [__('validation.date_format', ['format' => 'YYYY/MM/DD'])]]], 422);
                     }
-                 }
+                }
             } else {
-                 // This case should ideally be caught by 'required' rule, but handle defensively
-                 Log::warning('Date field was empty after validation?');
-                 return response()->json(['errors' => ['date' => [__('validation.required')]]], 422);
+                // This case should ideally be caught by 'required' rule, but handle defensively
+                Log::warning('Date field was empty after validation?');
+                return response()->json(['errors' => ['date' => [__('validation.required')]]], 422);
             }
         } else {
             // For non-Persian locales, ensure standard format if needed (optional)
             try {
                 $validated['date'] = \Carbon\Carbon::parse($validated['date'])->format('Y-m-d');
             } catch (\Exception $e) {
-                 Log::error('Date conversion failed (Non-FA locale):', ['date' => $validated['date'], 'error' => $e->getMessage()]);
-                 return response()->json(['errors' => ['date' => [__('validation.date_format', ['format' => 'YYYY-MM-DD or similar'])]]], 422);
+                Log::error('Date conversion failed (Non-FA locale):', ['date' => $validated['date'], 'error' => $e->getMessage()]);
+                return response()->json(['errors' => ['date' => [__('validation.date_format', ['format' => 'YYYY-MM-DD or similar'])]]], 422);
             }
         }
 
 
         if ($request->hasFile('receipt_image')) {
             try {
-                 $validated['receipt_image'] = $request->file('receipt_image')->store('receipts', 'public');
+                $validated['receipt_image'] = $request->file('receipt_image')->store('receipts', 'public');
             } catch (\Exception $e) {
                 Log::error('Receipt image upload failed:', ['error' => $e->getMessage()]);
                 return response()->json(['errors' => ['receipt_image' => [__('common.file_upload_error')]]], 422);
@@ -137,8 +133,8 @@ class ExpenseController extends Controller
         }
 
         try {
-             $expense = Expense::create($validated);
-             Log::info('Expense created successfully:', ['expense_id' => $expense->id]);
+            $expense = Expense::create($validated);
+            Log::info('Expense created successfully:', ['expense_id' => $expense->id]);
         } catch (\Exception $e) {
             Log::error('Expense creation failed:', ['error' => $e->getMessage(), 'data' => $validated]);
             return response()->json(['message' => __('common.error_occurred_saving')], 500);
@@ -159,48 +155,69 @@ class ExpenseController extends Controller
 
     public function update(Request $request, Expense $expense)
     {
-        // Similar validation and update logic needed here, consider refactoring
-        $validated = $request->validate([
-            'date' => 'required|string', // Adjust validation as needed
-            'amount' => 'required|numeric',
-            'description' => 'nullable|string',
-            'group_id' => 'nullable|exists:expense_groups,id',
-            'party_id' => 'nullable|exists:parties,id',
-            'petty_cash_box_id' => 'required|exists:petty_cash_boxes,id',
-            'currency' => 'required|in:IRR,TRY',
-            'rate' => 'required|numeric',
+        // تبدیل اعداد فارسی به لاتین (در صورت نیاز)
+        $rawDateInput = $request->input('date');
+        $latinDateInput = $this->convertNumbersToLatin($rawDateInput);
+        $request->merge(['date' => $latinDateInput]);
+
+        // پاک‌سازی اعداد
+        $request->merge([
+            'amount' => str_replace(',', '', $request->input('amount')),
+            'rate' => str_replace(',', '', $request->input('rate')),
+            'irr_amount' => str_replace(',', '', $request->input('irr_amount')),
         ]);
 
-        // Date conversion logic for update (similar to store)
-        if (app()->getLocale() === 'fa' && !empty($validated['date'])) {
-             try {
-                $carbonDate = \Carbon\Carbon::parse(str_replace('/', '-', $validated['date']));
-                $validated['date'] = Jalalian::fromCarbon($carbonDate)->format('Y-m-d');
-             } catch (\Exception $e) {
+        try {
+            $validated = $request->validate([
+                'date' => 'required|string',
+                'amount' => 'required|numeric',
+                'description' => 'nullable|string',
+                'group_id' => 'nullable|exists:expense_groups,id',
+                'party_id' => 'nullable|exists:parties,id',
+                'petty_cash_box_id' => 'required|exists:petty_cash_boxes,id',
+                'currency' => 'required|in:IRR,TRY',
+                'rate' => 'required|numeric',
+                'irr_amount' => 'required|numeric',
+                'receipt_image' => 'nullable|file|image|max:2048',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
+
+        // تبدیل تاریخ شمسی به میلادی
+        if (app()->getLocale() === 'fa') {
+            if (!empty($validated['date'])) {
                 try {
-                    $carbonDate = Jalalian::fromFormat('Y/m/d', $validated['date'])->toCarbon();
+                    $carbonDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $validated['date'])->toCarbon();
                     $validated['date'] = $carbonDate->format('Y-m-d');
-                } catch (\Exception $e2) {
-                   // Handle error - perhaps redirect back with error
-                   return back()->withErrors(['date' => __('validation.date_format', ['format' => 'YYYY/MM/DD'])])->withInput();
+                } catch (\Exception $e) {
+                    return response()->json(['errors' => ['date' => [__('validation.date_format', ['format' => 'YYYY/MM/DD'])]]], 422);
                 }
-             }
-        } elseif (!empty($validated['date'])) {
+            }
+        } else {
             try {
                 $validated['date'] = \Carbon\Carbon::parse($validated['date'])->format('Y-m-d');
             } catch (\Exception $e) {
-                 return back()->withErrors(['date' => __('validation.date_format', ['format' => 'YYYY-MM-DD or similar'])])->withInput();
+                return response()->json(['errors' => ['date' => [__('validation.date_format', ['format' => 'YYYY-MM-DD or similar'])]]], 422);
             }
         }
 
-        // Clean numeric fields (do this *before* validation ideally, refactor needed)
-        $validated['amount'] = str_replace(',', '', $request->input('amount'));
-        $validated['rate'] = str_replace(',', '', $request->input('rate'));
+        // تبدیل group_id به expense_group_id
+        if (isset($validated['group_id'])) {
+            $validated['expense_group_id'] = $validated['group_id'];
+            unset($validated['group_id']);
+        }
 
+        // آپدیت فقط فیلدهای تغییر یافته (در صورت نیاز)
         $expense->update($validated);
 
-        return redirect()->route('expenses.index')
-            ->with('success', __('expenses.expense_updated'));
+        if ($request->hasFile('receipt_image')) {
+            $path = $request->file('receipt_image')->store('receipts', 'public');
+            $expense->receipt_image = $path;
+            $expense->save();
+        }
+
+        return response()->json(['message' => 'هزینه با موفقیت ویرایش شد.']);
     }
 
     public function destroy(Expense $expense)
@@ -214,4 +231,4 @@ class ExpenseController extends Controller
         return redirect()->route('expenses.index')
             ->with('success', __('expenses.expense_deleted'));
     }
-} 
+}

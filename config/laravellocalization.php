@@ -6,8 +6,18 @@ return [
     // These are sorted by the native name, which is the order you might show them in a language selector.
     // Regional languages are sorted by their base language, so "British English" sorts as "English, British"
     'supportedLocales' => [
-        'fa'          => ['name' => 'Persian',                'script' => 'Arab', 'native' => 'فارسی', 'regional' => 'fa_IR'],
-        'tr'          => ['name' => 'Turkish',                'script' => 'Latn', 'native' => 'Türkçe', 'regional' => 'tr_TR'],
+        'fa' => [
+            'name' => 'Persian',
+            'script' => 'Arab',
+            'native' => 'فارسی',
+            'regional' => 'fa_IR'
+        ],
+        'tr' => [
+            'name' => 'Turkish',
+            'script' => 'Latn',
+            'native' => 'Türkçe',
+            'regional' => 'tr_TR'
+        ],
         // Keep English commented out unless you plan to support it
         //'en'          => ['name' => 'English',                'script' => 'Latn', 'native' => 'English', 'regional' => 'en_GB'], 
         // Add other languages here if needed

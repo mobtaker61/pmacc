@@ -10,15 +10,15 @@
 
     <!-- KPIs Row -->
     <div class="row mb-4">
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-4 col-sm-6 mb-3">
             <div class="card text-white bg-primary h-100">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-wallet me-2"></i>@lang('dashboard.total_balance')</h5>
-                    <p class="card-text fs-4 fw-bold">{{ NumberHelper::format($kpiData['totalBalanceIRR']) }} IRR</p>
+                    <h5 class="card-title"><i class="fas fa-wallet me-2"></i>مانده صندوق</h5>
+                    <p class="card-text fs-4 fw-bold">{{ NumberHelper::format($kpiData['pettyCashBalance']) }} IRR</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-4 col-sm-6 mb-3">
             <div class="card text-white bg-danger h-100">
                 <div class="card-body">
                     <h5 class="card-title"><i class="fas fa-arrow-trend-down me-2"></i>@lang('dashboard.expenses_last_30_days')</h5>
@@ -26,19 +26,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-4 col-sm-6 mb-3">
             <div class="card text-white bg-success h-100">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-arrow-trend-up me-2"></i>@lang('dashboard.income_last_30_days')</h5>
-                    <p class="card-text fs-4 fw-bold">{{ NumberHelper::format($kpiData['incomeLast30Days']) }} IRR</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card text-dark bg-warning h-100">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-users me-2"></i>@lang('dashboard.active_parties')</h5>
-                    <p class="card-text fs-4 fw-bold">{{ $kpiData['activePartiesCount'] }}</p>
+                    <h5 class="card-title"><i class="fas fa-arrow-trend-up me-2"></i>مجموع ورودی تنخواه</h5>
+                    <p class="card-text fs-4 fw-bold">{{ NumberHelper::format($kpiData['totalIncomeToBox']) }} IRR</p>
                 </div>
             </div>
         </div>
@@ -49,10 +41,10 @@
         <div class="col-md-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    @lang('dashboard.income_expense_trend') (@lang('dashboard.last_30_days'))
+                    روند هزینه‌ها (@lang('dashboard.last_30_days'))
                 </div>
                 <div class="card-body">
-                    <canvas id="incomeExpenseTrendChart"></canvas>
+                    <canvas id="expenseTrendChart"></canvas>
                 </div>
             </div>
         </div>
@@ -176,20 +168,19 @@
 @endsection
 
 @php
-    $incomeExpenseTrendJson = json_encode($chartData['incomeExpenseTrendData']);
+    $expenseTrendJson = json_encode($chartData['expenseTrendData']);
     $expensesByGroupJson = json_encode($chartData['expensesByGroup']);
 @endphp
 
 {{-- Hidden divs to store JSON data --}}
-<div id="incomeExpenseTrendData" style="display: none;">{!! $incomeExpenseTrendJson !!}</div>
+<div id="expenseTrendData" style="display: none;">{!! $expenseTrendJson !!}</div>
 <div id="expensesByGroupData" style="display: none;">{!! $expensesByGroupJson !!}</div>
 
 {{-- Inject translations into JS --}}
 <script>
     window.dashboardLang = {
-        income: "@lang('dashboard.income')",
-        expense: "@lang('dashboard.expense')",
-        total_expenses: "@lang('dashboard.total_expenses')"
+        expense: "هزینه",
+        total_expenses: "مجموع هزینه‌ها"
     };
 </script>
 
@@ -198,87 +189,42 @@
 document.addEventListener('DOMContentLoaded', function () {
     const locale = '{{ $locale }}';
     const currency = 'IRR';
-
-    // Function to safely parse JSON from hidden divs
-    const getJsonData = (elementId) => {
-        const element = document.getElementById(elementId);
-        if (!element) return null;
-        try {
-            return JSON.parse(element.textContent);
-        } catch (e) {
-            console.error('Error parsing JSON data from:', elementId, e);
-            return null;
-        }
-    };
-
-    // Retrieve chart data
-    const incomeExpenseData = getJsonData('incomeExpenseTrendData');
-    const expensesByGroupData = getJsonData('expensesByGroupData');
-
-    const formatChartCurrency = (value) => {
-        try {
-            return new Intl.NumberFormat(locale + '-u-nu-latn', {
-                 style: 'decimal',
-                 minimumFractionDigits: 0,
-                 maximumFractionDigits: 0 
-            }).format(value);
-        } catch (e) {
-             console.error("Currency formatting error:", e);
-             return value;
-        }
-    };
-
-    // 1. Income vs Expense Trend Chart
-    const incomeExpenseCtx = document.getElementById('incomeExpenseTrendChart');
-    if (incomeExpenseCtx && incomeExpenseData) {
-        new Chart(incomeExpenseCtx, {
+    // Expense Trend Chart
+    let expenseTrendData = JSON.parse(document.getElementById('expenseTrendData').textContent);
+    if (!expenseTrendData || !expenseTrendData.labels || expenseTrendData.labels.length === 0) {
+        expenseTrendData = { labels: ['بدون داده'], expense: [0] };
+    }
+    // Ensure all values are numbers
+    expenseTrendData.expense = expenseTrendData.expense.map(x => Number(x));
+    const ctxExpense = document.getElementById('expenseTrendChart');
+    if (ctxExpense) {
+        new Chart(ctxExpense.getContext('2d'), {
             type: 'line',
             data: {
-                labels: incomeExpenseData.labels,
+                labels: expenseTrendData.labels,
                 datasets: [
                     {
-                        label: window.dashboardLang.income || 'Income',
-                        data: incomeExpenseData.income,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1,
+                        label: window.dashboardLang.expense,
+                        data: expenseTrendData.expense,
+                        borderColor: 'rgba(220,53,69,1)',
+                        backgroundColor: 'rgba(220,53,69,0.1)',
                         fill: true,
-                    },
-                    {
-                        label: window.dashboardLang.expense || 'Expense',
-                        data: incomeExpenseData.expense,
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.1,
-                        fill: true,
+                        tension: 0.3
                     }
                 ]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { mode: 'index', intersect: false }
+                },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                             callback: function(value, index, values) {
-                                 return formatChartCurrency(value);
-                             }
-                         }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += formatChartCurrency(context.parsed.y);
-                                }
-                                return label;
+                            callback: function(value) {
+                                return Number(value).toLocaleString(locale) + ' ' + currency;
                             }
                         }
                     }
@@ -287,47 +233,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 2. Expenses by Group Chart
-    const expensesByGroupCtx = document.getElementById('expensesByGroupChart');
-    if (expensesByGroupCtx && expensesByGroupData) {
-        const groupLabels = Object.keys(expensesByGroupData);
-        const groupTotals = Object.values(expensesByGroupData);
-        
-        const backgroundColors = groupLabels.map(() => 
-            `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`
-        );
-        const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
-
-        new Chart(expensesByGroupCtx, {
-            type: 'doughnut',
+    // Expenses By Group Chart
+    let expensesByGroupData = JSON.parse(document.getElementById('expensesByGroupData').textContent);
+    if (!expensesByGroupData || Object.keys(expensesByGroupData).length === 0) {
+        expensesByGroupData = { 'بدون داده': 0 };
+    }
+    // Ensure all values are numbers
+    expensesByGroupData = Object.fromEntries(
+        Object.entries(expensesByGroupData).map(([k, v]) => [k, Number(v)])
+    );
+    const ctxGroup = document.getElementById('expensesByGroupChart');
+    if (ctxGroup) {
+        new Chart(ctxGroup.getContext('2d'), {
+            type: 'bar',
             data: {
-                labels: groupLabels,
-                datasets: [{
-                    label: window.dashboardLang.total_expenses || 'Total Expenses',
-                    data: groupTotals,
-                    backgroundColor: backgroundColors,
-                    borderColor: borderColors,
-                    borderWidth: 1
-                }]
+                labels: Object.keys(expensesByGroupData),
+                datasets: [
+                    {
+                        label: window.dashboardLang.total_expenses,
+                        data: Object.values(expensesByGroupData),
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }
+                ]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                         callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed !== null) {
-                                     label += formatChartCurrency(context.parsed);
-                                }
-                                return label;
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return Number(value).toLocaleString(locale) + ' ' + currency;
                             }
                         }
                     }

@@ -42,7 +42,7 @@
                                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editGroupModal{{ $group->id }}">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <form action="{{ route('expense-groups.destroy', $group) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('expense_groups.destroy', $group) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger" data-confirm="@lang('expenses.confirm_delete_group')" onclick="return confirm(this.dataset.confirm)">
@@ -109,7 +109,7 @@
 <div class="modal fade" id="editGroupModal{{ $group->id }}" tabindex="-1" aria-labelledby="editGroupModalLabel{{ $group->id }}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('expense-groups.update', $group) }}" method="POST">
+            <form action="{{ route('expense_groups.update', $group) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-header">

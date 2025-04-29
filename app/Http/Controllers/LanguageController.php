@@ -37,6 +37,8 @@ class LanguageController extends Controller
             // For debugging details
             Log::debug('Session data dump: ' . json_encode(Session::all()));
             // Log::debug('Cookie data: ' . $locale);
+            
+            Cookie::queue('locale', $locale, 60*24*30); // 30 روز
         } else {
             Log::warning('Invalid locale requested: ' . $locale);
             Session::flash('error', __('Invalid language selected'));

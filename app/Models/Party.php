@@ -28,10 +28,14 @@ class Party extends Model
 
     public function getNameAttribute(): string
     {
-        if ($this->company_name) {
-            return $this->company_name;
-        }
         return $this->first_name . ' ' . $this->last_name;
+    }
+    public function getOfficialNameAttribute(): string
+    {
+        if ($this->company_name) {
+            return $this->name . ' (' . $this->company_name . ')';
+        }
+        return $this->name;
     }
 
     public function partyGroup(): BelongsTo
@@ -44,22 +48,36 @@ class Party extends Model
         return $this->hasMany(PettyCashTransaction::class);
     }
 
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
+
     public function getTotalPaymentsAttribute(): float
     {
-        return $this->transactions()
+        // Total payments are expenses paid to this party (outgoing money)
+        $expensePayments = $this->expenses()->sum('irr_amount') ?? 0;
+        
+        // Add any 'payment' type transactions (additional outgoing money)
+        $transactionPayments = $this->transactions()
             ->where('type', 'payment')
-            ->sum('amount');
+            ->sum('irr_amount') ?? 0;
+        
+        return $expensePayments + $transactionPayments;
     }
 
     public function getTotalReceiptsAttribute(): float
     {
+        // Total receipts are income received from this party (incoming money)
         return $this->transactions()
             ->where('type', 'receipt')
-            ->sum('amount');
+            ->sum('irr_amount') ?? 0;
     }
 
     public function getBalanceAttribute(): float
     {
+        // Positive balance means the party has contributed more than taken
+        // Negative balance means the party has taken more than contributed
         return $this->total_receipts - $this->total_payments;
     }
 }

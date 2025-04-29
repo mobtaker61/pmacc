@@ -1,6 +1,15 @@
 <?php
 
 return [
+    'common' => [
+        'save' => 'ذخیره',
+        'cancel' => 'انصراف',
+        'add_new' => 'افزودن',
+        'error_occurred' => 'خطایی رخ داد. لطفا دوباره تلاش کنید.',
+        'error_occurred_saving' => 'خطایی در هنگام ذخیره رخ داد.',
+        'file_upload_error' => 'خطا در بارگذاری فایل.',
+        'date' => 'تاریخ',
+    ],
     'app' => [
         'dashboard' => 'داشبورد',
         'name' => 'حسابدار تنخواه',
@@ -39,6 +48,7 @@ return [
             'is_active' => 'فعال',
             'description' => 'توضیحات',
             'actions' => 'عملیات',
+            'all_boxes' => 'همه صندوقها'
         ],
         'transactions' => [
             'title' => 'تراکنش‌های تنخواه',
@@ -74,9 +84,5 @@ return [
         'general_settings' => 'تنظیمات عمومی',
         'try_to_irr_rate' => 'نرخ برابری لیر به تومان',
     ],
-    'common' => [
-        'error_occurred' => 'خطایی رخ داد. لطفا دوباره تلاش کنید.',
-        'error_occurred_saving' => 'خطایی در هنگام ذخیره رخ داد.',
-        'file_upload_error' => 'خطا در بارگذاری فایل.',
-    ]
-]; 
+
+];

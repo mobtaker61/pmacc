@@ -46,4 +46,6 @@ return [
     'group_updated' => 'Grup başarıyla güncellendi',
     'group_deleted' => 'Grup başarıyla silindi',
     'view_all' => 'Tüm Tarafları Görüntüle',
-]; 
+    'select_party' => 'Taraf Sec'
+
+];

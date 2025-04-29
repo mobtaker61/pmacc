@@ -17,6 +17,7 @@ return [
 
     'transactions' => [
         'title' => 'تراکنش‌های تنخواه',
+        'petty_cash_box' => 'صندوق تنخواه'
         // ... other transaction keys
     ],
     

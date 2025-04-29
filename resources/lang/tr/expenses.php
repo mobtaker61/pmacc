@@ -39,4 +39,7 @@ return [
     'select_party' => 'Taraf Seçin',
     'try_rate' => 'TRY Kuru',
     'select_box' => 'Kasa Seçin',
+    'add_party' => 'Yeni Taraf',
+    'select_petty_cash_box' => 'Kasa Seçin',
+
 ]; 

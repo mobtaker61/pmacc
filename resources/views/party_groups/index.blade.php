@@ -51,13 +51,6 @@
                                                 <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editGroupModal{{ $group->id }}">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <form action="{{ route('party-groups.destroy', $group) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger" data-confirm="@lang('parties.confirm_delete_group')" onclick="return confirm(this.dataset.confirm)">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -117,7 +110,7 @@
                 <h5 class="modal-title" id="editGroupModalLabel{{ $group->id }}">@lang('parties.edit_group')</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('party-groups.update', $group) }}" method="POST">
+            <form action="{{ route('party_groups.update', $group) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">

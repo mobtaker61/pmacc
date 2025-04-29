@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('parties', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 191);
-            $table->foreignId('group_id')->nullable()->constrained('party_groups')->onDelete('set null');
+            $table->string('first_name', 99);
+            $table->string('last_name', 99);
+            $table->foreignId('party_group_id')->nullable()->constrained('party_groups')->onDelete('set null');
             $table->text('description')->nullable();
+            $table->string('company_name',190)->nullable();
             $table->string('phone', 20)->nullable();
+            $table->string('mobile', 20)->nullable();
             $table->string('email', 191)->nullable();
             $table->string('address', 191)->nullable();
             $table->timestamps();

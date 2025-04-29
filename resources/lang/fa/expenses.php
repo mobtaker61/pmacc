@@ -39,4 +39,6 @@ return [
     'select_party' => 'انتخاب طرف حساب',
     'try_rate' => 'نرخ TRY',
     'select_box' => 'انتخاب صندوق',
+    'add_party' => 'طرف حساب جدید',
+    'select_petty_cash_box' => 'انتخاب صندوق تنخواه',
 ]; 
